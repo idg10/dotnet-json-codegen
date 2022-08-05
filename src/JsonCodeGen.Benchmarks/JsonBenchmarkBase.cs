@@ -30,9 +30,9 @@ namespace JsonCodeGen.Benchmarks
                     GivenName = "Arthur"
                 })
                 {
-                    //DateOfBirth = new DateOnly(1954, 2, 4).ToShortDateString()
+                    DateOfBirth = new DateOnly(1954, 2, 4).ToShortDateString()
                     // Testing to see if format="date" is validated (it isn't).
-                    DateOfBirth = "NotADate" // new DateOnly(1954, 2, 4).ToShortDateString()
+                    // DateOfBirth = "NotADate" // new DateOnly(1954, 2, 4).ToShortDateString()
                 };
                 for (int i = 0; i < 10000; ++i)
                 {
