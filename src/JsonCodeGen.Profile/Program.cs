@@ -6,11 +6,11 @@ var b = new FindElementBenchmarks();
 Console.WriteLine("Waiting...");
 Thread.Sleep(3000);
 
-for (int i = 0; i < 500; ++i)
+for (int i = 0; i < 30; ++i)
 {
-    string result = b.FindWholeArrayLoopSchemaGenDeserialize();
+//    string result = b.FindPerElementSchemaGenValidateDeserialize();
     if (i % 10 == 0)
     {
-        Console.WriteLine(result );
+  //      Console.WriteLine(result );
     }
 }

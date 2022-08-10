@@ -1,23 +1,14 @@
-﻿using BenchmarkDotNet.Attributes;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace JsonCodeGen.Benchmarks
 {
     public abstract class JsonBenchmarkBase
     {
         protected readonly byte[] jsonUtf8;
+        protected readonly PersonSerializable[] people = new PersonSerializable[10000];
         protected readonly Newtonsoft.Json.JsonSerializerSettings newtonsoftSerializerSettings = new() { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() };
         protected readonly JsonSerializerOptions systemTextJsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-        // Doesn't work with inheritance?
-        //[GlobalSetup]
-        //public void BuildBigJsonArray()
         protected JsonBenchmarkBase()
         {
             MemoryStream jsonData = new();
@@ -25,20 +16,24 @@ namespace JsonCodeGen.Benchmarks
             {
                 w.WriteStartArray();
 
-                PersonSerializable p = new(new PersonNameSerializable("Pewty")
+                for (int i = 0; i < people.Length; ++i)
                 {
-                    GivenName = "Arthur"
-                })
-                {
-                    DateOfBirth = new DateOnly(1954, 2, 4).ToShortDateString()
-                    // Testing to see if format="date" is validated (it isn't).
-                    // DateOfBirth = "NotADate" // new DateOnly(1954, 2, 4).ToShortDateString()
-                };
-                for (int i = 0; i < 10000; ++i)
-                {
-                    JsonSerializer.Serialize(w, p, systemTextJsonSerializerOptions);
+                    PersonSerializable p = new(new PersonNameSerializable("Pewty")
+                    {
+                        GivenName = "Arthur"
+                    });
                     p.Name.GivenName = "Arthur" + i;
                     p.Name.FamilyName = "Pewty" + i;
+                    p.DateOfBirth = new DateOnly(1954, 2, 4).AddDays(i).ToString("yyyy-MM-dd");
+
+                    // Use one of these to see the effect of format="date" validation failures.
+                    // Obviously wrong:
+                    // p.DateOfBirth = "NotADate";
+                    // Less obviously wrong: (produces "1954/2/4" but JSON schema dates are like "1954-02-04")
+                    // p,DateOfBirth = new DateOnly(1954, 2, 4).ToShortDateString();
+
+                    people[i] = p;
+                    JsonSerializer.Serialize(w, p, systemTextJsonSerializerOptions);
                 }
 
                 w.WriteEndArray();

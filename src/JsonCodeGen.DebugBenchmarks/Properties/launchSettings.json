@@ -1,0 +1,29 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
+    },
+    "FindPerElementSchemaGenValidateDeserialize": {
+      "commandName": "Project",
+      "commandLineArgs": "FindPerElementSchemaGenValidateDeserialize"
+    },
+    "FindPerElementSchemaGenDeserialize": {
+      "commandName": "Project",
+      "commandLineArgs": "FindPerElementSchemaGenDeserialize"
+    },
+    "FindWholeArraySystemTextJsonElements": {
+      "commandName": "Project",
+      "commandLineArgs": "FindWholeArraySystemTextJsonElements"
+    },
+    "FindSystemTextUtf8JsonReader": {
+      "commandName": "Project",
+      "commandLineArgs": "FindSystemTextUtf8JsonReader"
+    },
+    "SystemTextJsonSerializeReflection": {
+      "commandName": "Project",
+      "commandLineArgs": "SystemTextJsonSerializeReflection"
+    }
+  }
+}
