@@ -30,7 +30,7 @@ namespace JsonCodeGen.Benchmarks
                     // Obviously wrong:
                     // p.DateOfBirth = "NotADate";
                     // Less obviously wrong: (produces "1954/2/4" but JSON schema dates are like "1954-02-04")
-                    // p,DateOfBirth = new DateOnly(1954, 2, 4).ToShortDateString();
+                    //p.DateOfBirth = new DateOnly(1954, 2, 4).ToShortDateString();
 
                     people[i] = p;
                     JsonSerializer.Serialize(w, p, systemTextJsonSerializerOptions);

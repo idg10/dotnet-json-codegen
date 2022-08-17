@@ -383,12 +383,14 @@ namespace JsonCodeGen.Benchmarks
         {
             using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(this.jsonUtf8);
             var array = GenFromJsonSchema.PersonArray.FromJson(doc.RootElement);
-            array.Validate(new Corvus.Json.ValidationContext(), ValidationLevel.Basic);
-            foreach (var data in array.EnumerateArray())
+            if (array.IsValid())
             {
-                if (data.Name.GivenName.EqualsString("Arthur5000"))
+                foreach (var data in array.EnumerateArray())
                 {
-                    return data.DateOfBirth.AsOptionalString() ?? "";
+                    if (data.Name.GivenName.EqualsString("Arthur5000"))
+                    {
+                        return data.DateOfBirth.AsOptionalString() ?? "";
+                    }
                 }
             }
             return "";
@@ -401,11 +403,12 @@ namespace JsonCodeGen.Benchmarks
             foreach (System.Text.Json.JsonElement element in doc.RootElement.EnumerateArray())
             {
                 var data = GenFromJsonSchema.Person.FromJson(element);
-                data.Validate(new ValidationContext(), ValidationLevel.Basic);
-
-                if (data.Name.GivenName.EqualsString("Arthur5000"))
+                if (data.IsValid())
                 {
-                    return data.DateOfBirth.AsOptionalString() ?? "";
+                    if (data.Name.GivenName.EqualsString("Arthur5000"))
+                    {
+                        return data.DateOfBirth.AsOptionalString() ?? "";
+                    }
                 }
             }
 
