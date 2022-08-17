@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
-    <PackageReference Include="Corvus.Json.ExtendedTypes" Version="1.0.0-v1-pre1.64" />
+    <PackageReference Include="Corvus.Json.ExtendedTypes" Version="1.0.0-v1-pre1.78" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

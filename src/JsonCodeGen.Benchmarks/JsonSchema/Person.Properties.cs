@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 #nullable enable
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Corvus.Json;
@@ -19,7 +20,6 @@ namespace GenFromJsonSchema;
 /// </summary>
 public readonly partial struct Person
 {
-    private static readonly ImmutableDictionary<JsonPropertyName, PropertyValidator<Person>> __CorvusLocalProperties = CreateLocalPropertyValidators();
     /// <summary>
     /// JSON property name for <see cref = "Name"/>.
     /// </summary>
@@ -101,6 +101,46 @@ public readonly partial struct Person
     }
 
     /// <summary>
+    /// Tries to get the validator for the given property.
+    /// </summary>
+    /// <param name = "property">The property for which to get the validator.</param>
+    /// <param name = "hasJsonElementBacking"><c>True</c> if the object containing the property has a JsonElement backing.</param>
+    /// <param name = "propertyValidator">The validator for the property, if provided by this schema.</param>
+    /// <returns><c>True</c> if the validator was found.</returns>
+    public bool __TryGetCorvusLocalPropertiesValidator(in JsonObjectProperty property, bool hasJsonElementBacking, [NotNullWhen(true)] out ObjectPropertyValidator? propertyValidator)
+    {
+        if (hasJsonElementBacking)
+        {
+            if (property.NameEquals(NameUtf8JsonPropertyName.Span))
+            {
+                propertyValidator = __CorvusValidateName;
+                return true;
+            }
+            else if (property.NameEquals(DateOfBirthUtf8JsonPropertyName.Span))
+            {
+                propertyValidator = __CorvusValidateDateOfBirth;
+                return true;
+            }
+        }
+        else
+        {
+            if (property.NameEquals(NameJsonPropertyName))
+            {
+                propertyValidator = __CorvusValidateName;
+                return true;
+            }
+            else if (property.NameEquals(DateOfBirthJsonPropertyName))
+            {
+                propertyValidator = __CorvusValidateDateOfBirth;
+                return true;
+            }
+        }
+
+        propertyValidator = null;
+        return false;
+    }
+
+    /// <summary>
     /// Creates an instance of a <see cref = "Person"/>.
     /// </summary>
     public static Person Create(GenFromJsonSchema.PersonName name, Corvus.Json.JsonDate? dateOfBirth = null)
@@ -135,23 +175,13 @@ public readonly partial struct Person
         return this.SetProperty(DateOfBirthJsonPropertyName, value);
     }
 
-    private static ImmutableDictionary<JsonPropertyName, PropertyValidator<Person>> CreateLocalPropertyValidators()
+    private static ValidationContext __CorvusValidateName(in JsonObjectProperty property, in ValidationContext validationContext, ValidationLevel level)
     {
-        ImmutableDictionary<JsonPropertyName, PropertyValidator<Person>>.Builder builder = ImmutableDictionary.CreateBuilder<JsonPropertyName, PropertyValidator<Person>>();
-        builder.Add(NameJsonPropertyName, __CorvusValidateName);
-        builder.Add(DateOfBirthJsonPropertyName, __CorvusValidateDateOfBirth);
-        return builder.ToImmutable();
+        return property.ValueAs<GenFromJsonSchema.PersonName>().Validate(validationContext, level);
     }
 
-    private static ValidationContext __CorvusValidateName(in Person that, in ValidationContext validationContext, ValidationLevel level)
+    private static ValidationContext __CorvusValidateDateOfBirth(in JsonObjectProperty property, in ValidationContext validationContext, ValidationLevel level)
     {
-        GenFromJsonSchema.PersonName property = that.Name;
-        return property.Validate(validationContext, level);
-    }
-
-    private static ValidationContext __CorvusValidateDateOfBirth(in Person that, in ValidationContext validationContext, ValidationLevel level)
-    {
-        Corvus.Json.JsonDate property = that.DateOfBirth;
-        return property.Validate(validationContext, level);
+        return property.ValueAs<Corvus.Json.JsonDate>().Validate(validationContext, level);
     }
 }

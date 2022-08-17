@@ -1,19 +1,14 @@
-﻿//#define System_Text_Json
-//#define System_Text_Json_Codegen
-//#define CustomCodeGen
+﻿#define System_Text_Json
+#define System_Text_Json_Codegen
+#define CustomCodeGen
+#define TestValidation
 
 using BenchmarkDotNet.Attributes;
 
 using Corvus.Json;
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace JsonCodeGen.Benchmarks
 {

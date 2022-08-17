@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 #nullable enable
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Corvus.Json;
@@ -19,7 +20,6 @@ namespace GenFromJsonSchema;
 /// </summary>
 public readonly partial struct PersonName
 {
-    private static readonly ImmutableDictionary<JsonPropertyName, PropertyValidator<PersonName>> __CorvusLocalProperties = CreateLocalPropertyValidators();
     /// <summary>
     /// JSON property name for <see cref = "FamilyName"/>.
     /// </summary>
@@ -141,6 +141,56 @@ public readonly partial struct PersonName
     }
 
     /// <summary>
+    /// Tries to get the validator for the given property.
+    /// </summary>
+    /// <param name = "property">The property for which to get the validator.</param>
+    /// <param name = "hasJsonElementBacking"><c>True</c> if the object containing the property has a JsonElement backing.</param>
+    /// <param name = "propertyValidator">The validator for the property, if provided by this schema.</param>
+    /// <returns><c>True</c> if the validator was found.</returns>
+    public bool __TryGetCorvusLocalPropertiesValidator(in JsonObjectProperty property, bool hasJsonElementBacking, [NotNullWhen(true)] out ObjectPropertyValidator? propertyValidator)
+    {
+        if (hasJsonElementBacking)
+        {
+            if (property.NameEquals(FamilyNameUtf8JsonPropertyName.Span))
+            {
+                propertyValidator = __CorvusValidateFamilyName;
+                return true;
+            }
+            else if (property.NameEquals(GivenNameUtf8JsonPropertyName.Span))
+            {
+                propertyValidator = __CorvusValidateGivenName;
+                return true;
+            }
+            else if (property.NameEquals(OtherNamesUtf8JsonPropertyName.Span))
+            {
+                propertyValidator = __CorvusValidateOtherNames;
+                return true;
+            }
+        }
+        else
+        {
+            if (property.NameEquals(FamilyNameJsonPropertyName))
+            {
+                propertyValidator = __CorvusValidateFamilyName;
+                return true;
+            }
+            else if (property.NameEquals(GivenNameJsonPropertyName))
+            {
+                propertyValidator = __CorvusValidateGivenName;
+                return true;
+            }
+            else if (property.NameEquals(OtherNamesJsonPropertyName))
+            {
+                propertyValidator = __CorvusValidateOtherNames;
+                return true;
+            }
+        }
+
+        propertyValidator = null;
+        return false;
+    }
+
+    /// <summary>
     /// Creates an instance of a <see cref = "PersonName"/>.
     /// </summary>
     public static PersonName Create(GenFromJsonSchema.PersonNameElement familyName, GenFromJsonSchema.PersonNameElement? givenName = null, GenFromJsonSchema.OtherNames? otherNames = null)
@@ -190,30 +240,18 @@ public readonly partial struct PersonName
         return this.SetProperty(OtherNamesJsonPropertyName, value);
     }
 
-    private static ImmutableDictionary<JsonPropertyName, PropertyValidator<PersonName>> CreateLocalPropertyValidators()
+    private static ValidationContext __CorvusValidateFamilyName(in JsonObjectProperty property, in ValidationContext validationContext, ValidationLevel level)
     {
-        ImmutableDictionary<JsonPropertyName, PropertyValidator<PersonName>>.Builder builder = ImmutableDictionary.CreateBuilder<JsonPropertyName, PropertyValidator<PersonName>>();
-        builder.Add(FamilyNameJsonPropertyName, __CorvusValidateFamilyName);
-        builder.Add(GivenNameJsonPropertyName, __CorvusValidateGivenName);
-        builder.Add(OtherNamesJsonPropertyName, __CorvusValidateOtherNames);
-        return builder.ToImmutable();
+        return property.ValueAs<GenFromJsonSchema.PersonNameElement>().Validate(validationContext, level);
     }
 
-    private static ValidationContext __CorvusValidateFamilyName(in PersonName that, in ValidationContext validationContext, ValidationLevel level)
+    private static ValidationContext __CorvusValidateGivenName(in JsonObjectProperty property, in ValidationContext validationContext, ValidationLevel level)
     {
-        GenFromJsonSchema.PersonNameElement property = that.FamilyName;
-        return property.Validate(validationContext, level);
+        return property.ValueAs<GenFromJsonSchema.PersonNameElement>().Validate(validationContext, level);
     }
 
-    private static ValidationContext __CorvusValidateGivenName(in PersonName that, in ValidationContext validationContext, ValidationLevel level)
+    private static ValidationContext __CorvusValidateOtherNames(in JsonObjectProperty property, in ValidationContext validationContext, ValidationLevel level)
     {
-        GenFromJsonSchema.PersonNameElement property = that.GivenName;
-        return property.Validate(validationContext, level);
-    }
-
-    private static ValidationContext __CorvusValidateOtherNames(in PersonName that, in ValidationContext validationContext, ValidationLevel level)
-    {
-        GenFromJsonSchema.OtherNames property = that.OtherNames;
-        return property.Validate(validationContext, level);
+        return property.ValueAs<GenFromJsonSchema.OtherNames>().Validate(validationContext, level);
     }
 }
