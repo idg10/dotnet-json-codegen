@@ -18,13 +18,13 @@ switch (args[0])
     //    bm.FindPerElementSchemaGenValidateDeserialize();
     //    break;
 
-    case "FindWholeArraySystemTextJsonElements":
-        Console.WriteLine(bm.FindSystemTextJsonJsonElement());
-        break;
+    //case "FindWholeArraySystemTextJsonElements":
+    //    Console.WriteLine(bm.FindSystemTextJsonJsonElement());
+    //    break;
 
-    case "FindSystemTextUtf8JsonReader":
-        Console.WriteLine(bm.FindSystemTextUtf8JsonReader());
-        break;
+    //case "FindSystemTextUtf8JsonReader":
+    //    Console.WriteLine(bm.FindSystemTextUtf8JsonReader());
+    //    break;
 
     case "SystemTextJsonSerializeReflection":
         Console.WriteLine(bm.SystemTextJsonSerializeReflection());

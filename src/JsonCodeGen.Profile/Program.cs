@@ -6,11 +6,16 @@ var b = new FindElementBenchmarks();
 Console.WriteLine("Waiting...");
 Thread.Sleep(3000);
 
-for (int i = 0; i < 30; ++i)
+
+for (int i = 0; i < 10; ++i)
 {
-//    string result = b.FindPerElementSchemaGenValidateDeserialize();
+    //Stream result = b.SystemTextJsonSerializeCodegen();
+    //    string result = b.FindPerElementSchemaGenValidateDeserialize();
     if (i % 10 == 0)
     {
-  //      Console.WriteLine(result );
+        //Console.WriteLine(result.Length);
     }
 }
+
+Console.WriteLine("Done, waiting...");
+Thread.Sleep(3000);

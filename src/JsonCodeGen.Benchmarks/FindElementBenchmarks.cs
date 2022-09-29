@@ -1,11 +1,14 @@
 ﻿#define System_Text_Json
 #define System_Text_Json_Codegen
 #define CustomCodeGen
-#define TestValidation
+//#define TestValidation
 
 using BenchmarkDotNet.Attributes;
 
 using Corvus.Json;
+
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 
 using System.Text;
 using System.Text.Json;
@@ -18,6 +21,7 @@ namespace JsonCodeGen.Benchmarks
         private const string LookingFor = "Arthur5000";
         private static byte[] LookingForUtf8 = Encoding.UTF8.GetBytes(LookingFor);
         private Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
 
         [Benchmark]
         public string FindWholeArrayNewtonsoftDeserialize()
@@ -272,21 +276,36 @@ namespace JsonCodeGen.Benchmarks
         [Benchmark]
         public Stream SystemTextJsonSerializeReflection()
         {
-            var ms = new MemoryStream(this.jsonUtf8.Length);
+            var ms = new MemoryStream(this.preallocatedOutputBuffer, writable: true);
             System.Text.Json.JsonSerializer.Serialize(ms, this.people, systemTextJsonSerializerOptions);
             return ms;
         }
 
         [Benchmark]
-        public Stream SystemTextJsonSerializeCodegen()
+        public Stream SystemTextJsonSerializeMetadataCodeGen()
         {
-            var ms = new MemoryStream(this.jsonUtf8.Length);
+            GC.KeepAlive( context.PersonSerializable);
+            var ms = new MemoryStream(this.preallocatedOutputBuffer, writable: true);
+            System.Text.Json.JsonSerializer.Serialize(ms, this.people, context.PersonSerializableArray);
+            return ms;
+        }
+
+        [Benchmark]
+        public Stream SystemTextJsonSerializeWriterCodegen()
+        {
+            var ms = new MemoryStream(this.preallocatedOutputBuffer, writable: true);
             using (Utf8JsonWriter jw = new(ms))
             {
                 jw.WriteStartArray();
+                int i = 0;
                 foreach (PersonSerializable p in this.people)
                 {
                     TestSerializationContext.Default.PersonSerializable.SerializeHandler!(jw, p);
+                    if (++i == 10)
+                    {
+                        jw.Flush();
+                        i = 0;
+                    }
                 }
                 jw.WriteEndArray();
             }
