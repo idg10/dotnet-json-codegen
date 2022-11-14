@@ -1,4 +1,5 @@
-﻿#define System_Text_Json
+﻿#define NEWTONSOFT_JSON
+#define System_Text_Json
 #define System_Text_Json_Codegen
 #define CustomCodeGen
 //#define TestValidation
@@ -22,7 +23,7 @@ namespace JsonCodeGen.Benchmarks
         private static byte[] LookingForUtf8 = Encoding.UTF8.GetBytes(LookingFor);
         private Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 
-
+#if NEWTONSOFT_JSON
         [Benchmark]
         public string FindWholeArrayNewtonsoftDeserialize()
         {
@@ -55,6 +56,22 @@ namespace JsonCodeGen.Benchmarks
 
             return "";
         }
+
+        // You might think this would be more efficient than reading the entire string
+        // into a single string up front. In practice, the speed is almost identical,
+        // and the GC patterns are slightly different - this seems to do fewer Gen0
+        // but more Gen1 and Gen2 collects. It does allocate about 20% less memory
+        // though.
+        ////[Benchmark]
+        ////public string FindWholeArrayNewtonsoftDeserializeViaStreamReader()
+        ////{
+        ////    using StreamReader json = new(new MemoryStream(this.jsonUtf8), Encoding.UTF8);
+        ////    using Newtonsoft.Json.JsonTextReader rdr = new(json);
+        ////    var data = this.serializer.Deserialize<PersonSerializable[]>(rdr)!;
+        ////    var match = data.First(d => d.Name.GivenName == "Arthur5000");
+        ////    return match.DateOfBirth!;
+        ////}
+#endif
 
 #if System_Text_Json
         [Benchmark]
@@ -144,7 +161,6 @@ namespace JsonCodeGen.Benchmarks
                     }
                     else if (depth == 1)
                     {
-                        
                         if (givenNameIsNonMatch)
                         {
                             // No point looking at the rest of the object
@@ -205,7 +221,7 @@ namespace JsonCodeGen.Benchmarks
                                     else
                                     {
                                         reader.Skip();
-                                    }    
+                                    }
                                     break;
 
                                 default:
@@ -226,7 +242,7 @@ namespace JsonCodeGen.Benchmarks
                                     {
                                         if (seenDateOfBirthForThisItem)
                                         {
-                                            return Encoding.UTF8.GetString(dateOfBirthBuffer[..dateOfBirthLength]); 
+                                            return Encoding.UTF8.GetString(dateOfBirthBuffer[..dateOfBirthLength]);
                                         }
                                     }
                                     else
@@ -398,7 +414,7 @@ namespace JsonCodeGen.Benchmarks
 
 #if TestValidation
         [Benchmark]
-        public string FindWholeArrayLoopSchemaGenValidateDeserialize()
+        public string FindWholeArrayLoopSchemaGenValidateIndividual()
         {
             using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(this.jsonUtf8);
             var array = GenFromJsonSchema.PersonArray.FromJson(doc.RootElement);
@@ -416,7 +432,7 @@ namespace JsonCodeGen.Benchmarks
         }
 
         [Benchmark]
-        public string FindPerElementSchemaGenValidateDeserialize()
+        public string FindPerElementSchemaGenValidateIndividual()
         {
             using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(this.jsonUtf8);
             foreach (System.Text.Json.JsonElement element in doc.RootElement.EnumerateArray())
@@ -431,6 +447,24 @@ namespace JsonCodeGen.Benchmarks
                 }
             }
 
+            return "";
+        }
+
+        [Benchmark]
+        public string FindWholeArrayLoopSchemaGenValidateAll()
+        {
+            using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(this.jsonUtf8);
+            var array = GenFromJsonSchema.PersonArray.FromJson(doc.RootElement);
+            foreach (var data in array.EnumerateArray())
+            {
+                if (data.IsValid())
+                {
+                    if (data.Name.GivenName.EqualsString("Arthur5000"))
+                    {
+                        return data.DateOfBirth.AsOptionalString() ?? "";
+                    }
+                }
+            }
             return "";
         }
 #endif
