@@ -25,16 +25,36 @@ public readonly partial struct PersonArray
         }
 
         int arrayLength = 0;
-        JsonArrayEnumerator<GenFromJsonSchema.Person> arrayEnumerator = this.EnumerateArray();
+        using JsonArrayEnumerator<GenFromJsonSchema.Person> arrayEnumerator = this.EnumerateArray();
         while (arrayEnumerator.MoveNext())
         {
+            if (level > ValidationLevel.Basic)
+            {
+                result = result.PushDocumentArrayIndex(arrayLength);
+            }
+
+            if (level > ValidationLevel.Basic)
+            {
+                result = result.PushValidationLocationProperty("items");
+            }
+
             result = arrayEnumerator.Current.Validate(result, level);
             if (level == ValidationLevel.Flag && !result.IsValid)
             {
                 return result;
             }
 
+            if (level > ValidationLevel.Basic)
+            {
+                result = result.PopLocation(); // items
+            }
+
             result = result.WithLocalItemIndex(arrayLength);
+            if (level > ValidationLevel.Basic)
+            {
+                result = result.PopLocation(); // array index
+            }
+
             arrayLength++;
         }
 

@@ -18,11 +18,23 @@ public readonly partial struct OtherNames
     private ValidationContext ValidateOneOf(in ValidationContext validationContext, ValidationLevel level)
     {
         ValidationContext result = validationContext;
+        if (level > ValidationLevel.Basic)
+        {
+            result = result.PushValidationLocationProperty("oneOf");
+        }
+
+        ValidationContext childContextBase = result;
         int oneOfCount = 0;
-        ValidationContext oneOfResult0 = this.As<GenFromJsonSchema.PersonNameElement>().Validate(validationContext.CreateChildContext(), level);
+        ValidationContext childContext0 = childContextBase;
+        if (level > ValidationLevel.Basic)
+        {
+            childContext0 = childContext0.PushValidationLocationArrayIndex(0);
+        }
+
+        ValidationContext oneOfResult0 = this.As<GenFromJsonSchema.PersonNameElement>().Validate(childContext0.CreateChildContext(), level);
         if (oneOfResult0.IsValid)
         {
-            result = result.MergeChildContext(oneOfResult0, level >= ValidationLevel.Detailed);
+            result = result.MergeChildContext(oneOfResult0, level >= ValidationLevel.Verbose);
             oneOfCount += 1;
             if (oneOfCount > 1 && level == ValidationLevel.Flag)
             {
@@ -32,24 +44,22 @@ public readonly partial struct OtherNames
         }
         else
         {
-            if (level >= ValidationLevel.Detailed)
-            {
-                result = result.MergeResults(result.IsValid, level, oneOfResult0);
-            }
-            else if (level >= ValidationLevel.Basic)
-            {
-                result = result.MergeResults(result.IsValid, level, oneOfResult0);
-            }
-            else
+            if (level >= ValidationLevel.Verbose)
             {
                 result = result.MergeResults(result.IsValid, level, oneOfResult0);
             }
         }
 
-        ValidationContext oneOfResult1 = this.As<GenFromJsonSchema.PersonNameElementArray>().Validate(validationContext.CreateChildContext(), level);
+        ValidationContext childContext1 = childContextBase;
+        if (level > ValidationLevel.Basic)
+        {
+            childContext1 = childContext1.PushValidationLocationArrayIndex(1);
+        }
+
+        ValidationContext oneOfResult1 = this.As<GenFromJsonSchema.PersonNameElementArray>().Validate(childContext1.CreateChildContext(), level);
         if (oneOfResult1.IsValid)
         {
-            result = result.MergeChildContext(oneOfResult1, level >= ValidationLevel.Detailed);
+            result = result.MergeChildContext(oneOfResult1, level >= ValidationLevel.Verbose);
             oneOfCount += 1;
             if (oneOfCount > 1 && level == ValidationLevel.Flag)
             {
@@ -59,15 +69,7 @@ public readonly partial struct OtherNames
         }
         else
         {
-            if (level >= ValidationLevel.Detailed)
-            {
-                result = result.MergeResults(result.IsValid, level, oneOfResult1);
-            }
-            else if (level >= ValidationLevel.Basic)
-            {
-                result = result.MergeResults(result.IsValid, level, oneOfResult1);
-            }
-            else
+            if (level >= ValidationLevel.Verbose)
             {
                 result = result.MergeResults(result.IsValid, level, oneOfResult1);
             }
@@ -75,7 +77,7 @@ public readonly partial struct OtherNames
 
         if (oneOfCount == 1)
         {
-            if (level >= ValidationLevel.Detailed)
+            if (level >= ValidationLevel.Verbose)
             {
                 result = result.WithResult(isValid: true, "Validation 10.2.1.3. onef - validated against the oneOf schema.");
             }
@@ -109,6 +111,11 @@ public readonly partial struct OtherNames
             {
                 result = result.WithResult(isValid: false);
             }
+        }
+
+        if (level > ValidationLevel.Basic)
+        {
+            result = result.PopLocation(); // oneOf
         }
 
         return result;

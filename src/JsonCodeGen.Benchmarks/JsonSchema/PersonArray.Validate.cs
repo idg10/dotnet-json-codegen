@@ -20,9 +20,15 @@ public readonly partial struct PersonArray
     public ValidationContext Validate(in ValidationContext validationContext, ValidationLevel level = ValidationLevel.Flag)
     {
         ValidationContext result = validationContext;
-        if (level != ValidationLevel.Flag)
+        if (level > ValidationLevel.Flag)
+        {
+            result = result.UsingResults();
+        }
+
+        if (level > ValidationLevel.Basic)
         {
             result = result.UsingStack();
+            result = result.PushSchemaLocation("C:/dev/idg10/dotnet-json-codegen/src/JsonCodeGen.Benchmarks/JsonSchema/person.json#/$defs/PersonArray");
         }
 
         JsonValueKind valueKind = this.ValueKind;
@@ -36,6 +42,11 @@ public readonly partial struct PersonArray
         if (level == ValidationLevel.Flag && !result.IsValid)
         {
             return result;
+        }
+
+        if (level != ValidationLevel.Flag)
+        {
+            result = result.PopLocation();
         }
 
         return result;
