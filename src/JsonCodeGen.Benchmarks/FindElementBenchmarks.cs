@@ -1,6 +1,6 @@
 ﻿#define NEWTONSOFT_JSON
 #define System_Text_Json
-#define System_Text_Json_Codegen
+//#define System_Text_Json_Codegen
 #define CustomCodeGen
 //#define TestValidation
 
@@ -16,6 +16,14 @@ using System.Text.Json;
 
 namespace JsonCodeGen.Benchmarks
 {
+    // |                                  Method |      Mean |     Error |    StdDev |      Gen0 |      Gen1 |     Gen2 |  Allocated |
+    // |---------------------------------------- |----------:|----------:|----------:|----------:|----------:|---------:|-----------:|
+    // |     FindWholeArrayNewtonsoftDeserialize | 62.968 ms | 3.0703 ms | 3.0155 ms | 3625.0000 | 1375.0000 | 375.0000 | 22666560 B |
+    // |     FindPerElementNewtonsoftDeserialize | 19.336 ms | 0.9628 ms | 0.9456 ms | 2218.7500 |         - |        - |  9359666 B |
+    // | FindWholeArraySystemTextJsonDeserialize | 42.666 ms | 2.0232 ms | 1.7935 ms |  846.1538 |  538.4615 | 153.8462 |  4860081 B |
+    // | FindPerElementSystemTextJsonDeserialize | 19.740 ms | 0.6957 ms | 0.7444 ms | 1093.7500 |         - |        - |  4633062 B |
+    // |           FindSystemTextJsonJsonElement |  6.336 ms | 0.2820 ms | 0.2637 ms |         - |         - |        - |      222 B |
+    // |            FindSystemTextUtf8JsonReader |  2.347 ms | 0.1115 ms | 0.1095 ms |         - |         - |        - |       51 B |
     [MemoryDiagnoser]
     public class FindElementBenchmarks : JsonBenchmarkBase
     {
@@ -288,7 +296,11 @@ namespace JsonCodeGen.Benchmarks
 #endif
 
 #if System_Text_Json_Codegen
-
+        // |                                  Method |      Mean |     Error |    StdDev |      Gen0 |      Gen1 |     Gen2 |  Allocated |
+        // |---------------------------------------- |----------:|----------:|----------:|----------:|----------:|---------:|-----------:|
+        // |       SystemTextJsonSerializeReflection |  7.558 ms | 0.3695 ms | 0.4255 ms |   93.7500 |         - |        - |   400541 B |
+        // |  SystemTextJsonSerializeMetadataCodeGen |  6.725 ms | 0.3200 ms | 0.3286 ms |   93.7500 |         - |        - |   400540 B |
+        // |    SystemTextJsonSerializeWriterCodegen |  3.237 ms | 0.1400 ms | 0.1310 ms |         - |         - |        - |     5107 B |
         [Benchmark]
         public Stream SystemTextJsonSerializeReflection()
         {
@@ -330,6 +342,18 @@ namespace JsonCodeGen.Benchmarks
 #endif
 
 #if CustomCodeGen
+        // |                                  Method |      Mean |     Error |    StdDev |      Gen0 |      Gen1 |     Gen2 |  Allocated |
+        // |---------------------------------------- |----------:|----------:|----------:|----------:|----------:|---------:|-----------:|
+        // |     FindWholeArrayNewtonsoftDeserialize | 61.979 ms | 2.8877 ms | 3.6520 ms | 3625.0000 | 1375.0000 | 375.0000 | 22666603 B |
+        // |     FindPerElementNewtonsoftDeserialize | 19.823 ms | 0.9201 ms | 0.8607 ms | 2218.7500 |         - |        - |  9359686 B |
+        // | FindWholeArraySystemTextJsonDeserialize | 42.555 ms | 2.1255 ms | 3.1155 ms |  846.1538 |  538.4615 | 153.8462 |  4860398 B |
+        // | FindPerElementSystemTextJsonDeserialize | 20.076 ms | 0.9655 ms | 1.1119 ms | 1093.7500 |         - |        - |  4633062 B |
+        // |           FindSystemTextJsonJsonElement |  6.230 ms | 0.2256 ms | 0.2000 ms |         - |         - |        - |      222 B |
+        // |            FindSystemTextUtf8JsonReader |  2.441 ms | 0.1214 ms | 0.1535 ms |         - |         - |        - |       49 B |
+        // |  FindWholeArrayLinqSchemaGenDeserialize |  6.729 ms | 0.3316 ms | 0.3257 ms |         - |         - |        - |      350 B |
+        // |  FindWholeArrayLoopSchemaGenDeserialize |  6.360 ms | 0.3007 ms | 0.2813 ms |         - |         - |        - |      142 B |
+        // |      FindPerElementSchemaGenDeserialize |  6.296 ms | 0.3063 ms | 0.3404 ms |         - |         - |        - |      142 B |
+
         [Benchmark]
         public string FindWholeArrayLinqSchemaGenDeserialize()
         {
