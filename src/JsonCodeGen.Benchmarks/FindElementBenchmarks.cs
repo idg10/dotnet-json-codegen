@@ -13,6 +13,17 @@ using System.Text.Json;
 
 namespace JsonCodeGen.Benchmarks;
 
+// .NET 8.0
+// |                                  Method |      Mean |     Error |    StdDev |      Gen0 |      Gen1 |     Gen2 |  Allocated |
+// |---------------------------------------- |----------:|----------:|----------:|----------:|----------:|---------:|-----------:|
+// |     FindWholeArrayNewtonsoftDeserialize | 41.906 ms | 1.3737 ms | 1.2850 ms | 3750.0000 | 1500.0000 | 500.0000 | 22666583 B |
+// |     FindPerElementNewtonsoftDeserialize | 11.503 ms | 0.2334 ms | 0.2069 ms | 2234.3750 |         - |        - |  9359650 B |
+// | FindWholeArraySystemTextJsonDeserialize | 29.465 ms | 0.9292 ms | 0.8692 ms |  812.5000 |  468.7500 | 156.2500 |  4335638 B |
+// | FindPerElementSystemTextJsonDeserialize | 14.437 ms | 0.0718 ms | 0.0637 ms | 1000.0000 |         - |        - |  4192933 B |
+// |           FindSystemTextJsonJsonElement |  4.965 ms | 0.0580 ms | 0.0514 ms |         - |         - |        - |      205 B |
+// |            FindSystemTextUtf8JsonReader |  1.913 ms | 0.0224 ms | 0.0187 ms |         - |         - |        - |       49 B |
+
+// .NET 7.0
 // |                                  Method |      Mean |     Error |    StdDev |      Gen0 |      Gen1 |     Gen2 |  Allocated |
 // |---------------------------------------- |----------:|----------:|----------:|----------:|----------:|---------:|-----------:|
 // |     FindWholeArrayNewtonsoftDeserialize | 62.968 ms | 3.0703 ms | 3.0155 ms | 3625.0000 | 1375.0000 | 375.0000 | 22666560 B |
@@ -21,6 +32,7 @@ namespace JsonCodeGen.Benchmarks;
 // | FindPerElementSystemTextJsonDeserialize | 19.740 ms | 0.6957 ms | 0.7444 ms | 1093.7500 |         - |        - |  4633062 B |
 // |           FindSystemTextJsonJsonElement |  6.336 ms | 0.2820 ms | 0.2637 ms |         - |         - |        - |      222 B |
 // |            FindSystemTextUtf8JsonReader |  2.347 ms | 0.1115 ms | 0.1095 ms |         - |         - |        - |       51 B |
+
 [MemoryDiagnoser]
 public class FindElementBenchmarks : JsonBenchmarkBase
 {
@@ -296,6 +308,14 @@ public class FindElementBenchmarks : JsonBenchmarkBase
 #endif
 
 #if System_Text_Json_Codegen
+    // .NET 8.0
+    // |                                  Method |      Mean |     Error |    StdDev |      Gen0 |      Gen1 |     Gen2 |  Allocated |
+    // |---------------------------------------- |----------:|----------:|----------:|----------:|----------:|---------:|-----------:|
+    // |       SystemTextJsonSerializeReflection |  5.079 ms | 0.0747 ms | 0.0699 ms |         - |         - |        - |      533 B |
+    // |  SystemTextJsonSerializeMetadataCodeGen |  4.979 ms | 0.0585 ms | 0.0489 ms |         - |         - |        - |      533 B |
+    // |    SystemTextJsonSerializeWriterCodegen |  2.406 ms | 0.0267 ms | 0.0208 ms |         - |         - |        - |     5105 B |
+
+    // .NET 7.0
     // |                                  Method |      Mean |     Error |    StdDev |      Gen0 |      Gen1 |     Gen2 |  Allocated |
     // |---------------------------------------- |----------:|----------:|----------:|----------:|----------:|---------:|-----------:|
     // |       SystemTextJsonSerializeReflection |  7.558 ms | 0.3695 ms | 0.4255 ms |   93.7500 |         - |        - |   400541 B |
@@ -342,6 +362,18 @@ public class FindElementBenchmarks : JsonBenchmarkBase
 #endif
 
 #if CustomCodeGen
+    // .NET 8.0
+    // |     FindWholeArrayNewtonsoftDeserialize | 41.906 ms | 1.3737 ms | 1.2850 ms | 3750.0000 | 1500.0000 | 500.0000 | 22666583 B |
+    // |     FindPerElementNewtonsoftDeserialize | 11.503 ms | 0.2334 ms | 0.2069 ms | 2234.3750 |         - |        - |  9359650 B |
+    // | FindWholeArraySystemTextJsonDeserialize | 29.465 ms | 0.9292 ms | 0.8692 ms |  812.5000 |  468.7500 | 156.2500 |  4335638 B |
+    // | FindPerElementSystemTextJsonDeserialize | 14.437 ms | 0.0718 ms | 0.0637 ms | 1000.0000 |         - |        - |  4192933 B |
+    // |           FindSystemTextJsonJsonElement |  4.965 ms | 0.0580 ms | 0.0514 ms |         - |         - |        - |      205 B |
+    // |            FindSystemTextUtf8JsonReader |  1.913 ms | 0.0224 ms | 0.0187 ms |         - |         - |        - |       49 B |
+    // |  FindWholeArrayLinqSchemaGenDeserialize |  5.297 ms | 0.1327 ms | 0.1242 ms |         - |         - |        - |      333 B |
+    // |  FindWholeArrayLoopSchemaGenDeserialize |  4.912 ms | 0.0930 ms | 0.0824 ms |         - |         - |        - |      125 B |
+    // |      FindPerElementSchemaGenDeserialize |  4.902 ms | 0.0766 ms | 0.0716 ms |         - |         - |        - |      125 B |
+
+    // .NET 7.0
     // |                                  Method |      Mean |     Error |    StdDev |      Gen0 |      Gen1 |     Gen2 |  Allocated |
     // |---------------------------------------- |----------:|----------:|----------:|----------:|----------:|---------:|-----------:|
     // |     FindWholeArrayNewtonsoftDeserialize | 61.979 ms | 2.8877 ms | 3.6520 ms | 3625.0000 | 1375.0000 | 375.0000 | 22666603 B |
@@ -360,7 +392,7 @@ public class FindElementBenchmarks : JsonBenchmarkBase
         using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(this.jsonUtf8);
         GenFromJsonSchema.PersonArray data = GenFromJsonSchema.PersonArray.FromJson(doc.RootElement);
         GenFromJsonSchema.Person match = data.EnumerateArray().First(d => d.Name.GivenName == "Arthur5000");
-        return match.DateOfBirth!;
+        return (string)match.DateOfBirth;
     }
 
     [Benchmark]
@@ -372,7 +404,7 @@ public class FindElementBenchmarks : JsonBenchmarkBase
         {
             if (data.Name.GivenName.EqualsString("Arthur5000"))
             {
-                return data.DateOfBirth.AsOptionalString() ?? "";
+                return (string)data.DateOfBirth;
             }
         }
         return "";
@@ -388,7 +420,7 @@ public class FindElementBenchmarks : JsonBenchmarkBase
 
             if (data.Name.GivenName.EqualsString("Arthur5000"))
             {
-                return data.DateOfBirth.AsOptionalString() ?? "";
+                return (string)data.DateOfBirth;
             }
         }
 
