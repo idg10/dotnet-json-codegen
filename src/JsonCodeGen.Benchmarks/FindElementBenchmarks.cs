@@ -1,15 +1,12 @@
 ﻿#define NEWTONSOFT_JSON
 #define System_Text_Json
-//#define System_Text_Json_Codegen
+#define System_Text_Json_Codegen
 #define CustomCodeGen
 //#define TestValidation
 
 using BenchmarkDotNet.Attributes;
 
 using Corvus.Json;
-
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 
 using System.Text;
 using System.Text.Json;
@@ -169,6 +166,7 @@ public class FindElementBenchmarks : JsonBenchmarkBase
                 }
                 else if (depth == 1)
                 {
+                    
                     if (givenNameIsNonMatch)
                     {
                         // No point looking at the rest of the object
