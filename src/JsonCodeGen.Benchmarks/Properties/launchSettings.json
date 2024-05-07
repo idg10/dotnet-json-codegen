@@ -2,12 +2,14 @@
   "profiles": {
     "WSL": {
       "commandName": "WSL2",
-      "environmentVariables": {},
       "distributionName": ""
     },
-    "FindPerElementSchemaGenDeserialize": {
+    "Benchmark": {
+      "commandName": "Project"
+    },
+    "Demo mode": {
       "commandName": "Project",
-      "commandLineArgs": "FindPerElementSchemaGenDeserialize"
+      "commandLineArgs": "tradeaccuracyforspeed"
     }
   }
 }
