@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace JsonCodeGen.Benchmarks;
 
-namespace JsonCodeGen.Benchmarks
+public class PersonSerializable(PersonNameSerializable name)
 {
-    public class PersonSerializable
-    {
-        public PersonNameSerializable Name { get; set; }
+    public PersonNameSerializable Name { get; set; } = name;
 
-        public PersonSerializable(PersonNameSerializable name)
-        {
-            Name = name;
-        }
-
-        public string? DateOfBirth { get; set; }
-    }
+    public string? DateOfBirth { get; set; }
 }

@@ -1,14 +1,8 @@
-﻿namespace JsonCodeGen.Benchmarks
-{
-    public class PersonNameSerializable
-    {
-        public PersonNameSerializable(string familyName)
-        {
-            FamilyName = familyName;
-        }
+﻿namespace JsonCodeGen.Benchmarks;
 
-        public string? GivenName { get; set; }
-        public string FamilyName { get; set; }
-        public IList<string> OtherNames { get; set; } = new List<string>();
-    }
+public class PersonNameSerializable(string familyName)
+{
+    public string? GivenName { get; set; }
+    public string FamilyName { get; set; } = familyName;
+    public IList<string> OtherNames { get; set; } = [];
 }

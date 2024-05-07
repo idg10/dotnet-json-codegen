@@ -25,8 +25,8 @@ namespace JsonCodeGen.Benchmarks;
 public class FindElementBenchmarks : JsonBenchmarkBase
 {
     private const string LookingFor = "Arthur5000";
-    private static byte[] LookingForUtf8 = Encoding.UTF8.GetBytes(LookingFor);
-    private Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+    private static readonly byte[] LookingForUtf8 = Encoding.UTF8.GetBytes(LookingFor);
+    private readonly Newtonsoft.Json.JsonSerializer serializer = new();
 
 #if NEWTONSOFT_JSON
     [Benchmark]
@@ -183,6 +183,7 @@ public class FindElementBenchmarks : JsonBenchmarkBase
 
                     if (inName)
                     {
+#pragma warning disable IDE0066 // Convert switch statement to expression - pretty terrible advice in this case, frankly.
                         switch (reader.TokenType)
                         {
                             case JsonTokenType.StartObject:
@@ -192,6 +193,7 @@ public class FindElementBenchmarks : JsonBenchmarkBase
                             default:
                                 throw new InvalidOperationException($"Did not expect {reader.TokenType} as name value");
                         }
+#pragma warning restore IDE0066 // Convert switch statement to expression
                     }
                     else if (inDateOfBirth)
                     {
